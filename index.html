@@ -21,24 +21,25 @@
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
-            padding-top: 10px; /* ลด padding ลงเพื่อให้ header อยู่ใกล้ขอบบน */
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .header {
-            position: sticky; /* เปลี่ยนจาก fixed เป็น sticky */
-            top: 0; /* ทำให้ header ติดอยู่ด้านบนเมื่อเลื่อนถึงจุดนี้ */
-            left: 0;
             width: 100%;
+            max-width: 800px;
             background-color: var(--card-background);
             box-shadow: 0 2px 10px var(--shadow-color);
-            z-index: 1000;
+            border-radius: 12px;
             padding: 15px 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
         }
         .header-title {
             text-align: center;
@@ -106,15 +107,16 @@
         #continueBtn:hover {
             background-color: #388E3C;
         }
-        .container {
-            width: 90%;
+        .content-container {
+            width: 100%;
             max-width: 800px;
-            padding: 20px;
+            flex: 1; /* ทำให้ส่วนนี้ขยายเต็มพื้นที่ที่เหลือ */
             background-color: var(--card-background);
             box-shadow: 0 4px 15px var(--shadow-color);
             border-radius: 12px;
             box-sizing: border-box;
-            margin-bottom: 20px;
+            padding: 20px;
+            overflow-y: auto; /* ทำให้เนื้อหาเลื่อนได้ภายในกรอบนี้ */
         }
         .section-title {
             font-size: 1.2rem;
@@ -134,10 +136,12 @@
             background-color: #ffebee;
             color: var(--danger-color);
             border-left: 5px solid var(--danger-color);
+            font-size: 1.1rem;
         }
         .instruction-box {
             background-color: #e3f2fd;
             border-left: 5px solid var(--primary-color);
+            font-size: 1.1rem;
         }
         .instruction-box ol {
             margin: 0;
@@ -174,20 +178,46 @@
         .summary {
             font-weight: 600;
             color: #555;
+            font-size: 1.1rem;
         }
         .summary span {
             color: var(--success-color);
         }
+        .bet-per-unit-highlight {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .header-small {
+            padding: 10px 20px;
+        }
+        .header-small .header-title {
+            font-size: 1.2rem;
+        }
+        .header-small .input-group {
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        .header-small .input-field-container {
+            width: auto;
+        }
+        .header-small .input-field-container label {
+            display: none;
+        }
+        .header-small .input-field-container input {
+            width: 80px;
+        }
         @media (max-width: 600px) {
             body {
-                padding-top: 150px;
                 font-size: 16px;
-            }
-            .header {
                 padding: 10px;
             }
-            .header-title {
-                font-size: 1.2rem;
+            .header-small {
+                padding: 5px;
+            }
+            .header-small .header-title {
+                font-size: 1rem;
             }
             .button-group button {
                 padding: 10px 18px;
@@ -199,12 +229,15 @@
             .result-item h4 {
                 font-size: 1rem;
             }
+            .bet-per-unit-highlight {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<header class="header">
+<header class="header" id="mainHeader">
     <div class="header-title">โปรแกรมคำนวณการเดินเงิน</div>
     <div class="input-group">
         <div class="input-field-container">
@@ -214,12 +247,12 @@
         <div class="button-group">
             <button id="analyzeBtn">📊 วิเคราะห์</button>
             <button id="clearBtn">🔄 ล้างตัวเลข</button>
-            <button id="continueBtn">💪 สู้ต่อ</button>
+            <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
         </div>
     </div>
 </header>
 
-<div class="container" id="mainContainer">
+<div class="content-container" id="mainContainer">
     <div id="initialContent">
         <div class="message-box important-note">
             🚨 **สำคัญมาก:** เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที (ทุนคืนเท่านั้น)
@@ -228,7 +261,7 @@
             <p>📝 **คำอธิบายการใช้งาน:**</p>
             <ol>
                 <li>กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป</li>
-                <li>กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด</li>
+                <li>กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในการแทงงวดต่อไป</li>
             </ol>
         </div>
     </div>
@@ -240,6 +273,7 @@
 </div>
 
 <script>
+    const mainHeader = document.getElementById('mainHeader');
     const lastBetAmountInput = document.getElementById('lastBetAmount');
     const analyzeBtn = document.getElementById('analyzeBtn');
     const clearBtn = document.getElementById('clearBtn');
@@ -247,6 +281,11 @@
     const initialContent = document.getElementById('initialContent');
     const resultsDiv = document.getElementById('results');
     const resultsContent = document.getElementById('resultsContent');
+    
+    // ตั้งค่า initial state ของ header ให้เป็นแบบเล็กตั้งแต่เริ่มต้น
+    mainHeader.classList.add('header-small');
+    const headerTitleElement = mainHeader.querySelector('.header-title');
+    headerTitleElement.textContent = 'วิเคราะห์การเดินเงิน';
 
     let totalLoss = 0;
     let period = 0;
@@ -268,7 +307,10 @@
         totalLoss = betAmount * betMultiplier;
         period = 1;
         resultsContent.innerHTML = '';
+        initialContent.style.display = 'none';
         resultsDiv.style.display = 'block';
+        
+        // ไม่ต้องปรับ padding-top แล้ว เพราะส่วน content-container มี scrollbar ของตัวเอง
         
         let initialSummary = document.createElement('p');
         initialSummary.className = 'summary';
@@ -281,8 +323,10 @@
 
     function generatePeriods(numPeriods) {
         for (let i = 0; i < numPeriods; i++) {
-            const nextBetPerUnit = totalLoss / ratio;
-            const nextTotalBet = nextBetPerUnit * betMultiplier;
+            const nextBetPerUnit_decimal = totalLoss / ratio;
+            const nextBetPerUnit_rounded = Math.ceil(nextBetPerUnit_decimal);
+
+            const nextTotalBet = nextBetPerUnit_rounded * betMultiplier;
             const newTotalLoss = totalLoss + nextTotalBet;
 
             let resultItem = document.createElement('div');
@@ -290,8 +334,8 @@
             resultItem.innerHTML = `
                 <h4>🎯 งวดที่ ${period}:</h4>
                 <ul>
-                    <li>เงินเดิมพันต่อตัว = ${formatNumber(nextBetPerUnit)} บาท</li>
-                    <li>เงินเดิมพันรวม = ${formatNumber(nextTotalBet)} บาท</li>
+                    <li><span class="bet-per-unit-highlight">เงินเดิมพันต่อตัว = ${nextBetPerUnit_rounded} บาท</span></li>
+                    <li>เงินเดิมพันรวม = ${nextTotalBet} บาท</li>
                     <li><span class="win">✅ หากชนะในงวดนี้ 🥳 คุณจะได้ทุนทั้งหมด ${formatNumber(totalLoss)} บาทคืน</span></li>
                     <li><span class="lose">❌ หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(newTotalLoss)} บาท</span></li>
                 </ul>
@@ -305,8 +349,10 @@
 
     function clear() {
         lastBetAmountInput.value = '';
+        initialContent.style.display = 'block';
         resultsDiv.style.display = 'none';
         continueBtn.style.display = 'none';
+        
         totalLoss = 0;
         period = 0;
     }
@@ -314,7 +360,9 @@
     function continueAnalysis() {
         generatePeriods(5);
     }
-
+    
+    // ไม่จำเป็นต้องใช้ window.onload และ onresize สำหรับ padding-top อีกแล้ว
+    
     analyzeBtn.addEventListener('click', analyze);
     clearBtn.addEventListener('click', clear);
     continueBtn.addEventListener('click', continueAnalysis);
