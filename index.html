@@ -3,205 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมคำนวณการเดินเงินทุนคืน</title>
+    <title>โปรแกรมคำนวณการเดินเงิน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #f5f5f5;
+            --background-color: #e3f2fd;
+            --text-color: #333;
+            --card-background: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+        }
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #e8f5e9;
-            color: #212121;
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding-top: 100px; /* Space for the fixed header */
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
-            padding: 20px;
-        }
-        pre {
-            background-color: #f0fff0;
-            padding: 20px;
-            border: 1px solid #c8e6c9;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            white-space: pre-wrap;
-            width: 100%;
-            max-width: 600px;
-        }
-        input, button {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        button {
-            cursor: pointer;
-            padding: 8px 15px;
-        }
-        .input-line {
-            display: flex;
             align-items: center;
-            margin-bottom: 10px;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-background);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            z-index: 1000;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+        .header-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
+        .input-field-container {
+            width: 100%;
+            max-width: 400px;
+        }
+        .input-field-container label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-field-container input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        #analyzeBtn {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        #analyzeBtn:hover {
+            background-color: #1976D2;
+        }
+        #clearBtn {
+            background-color: #9E9E9E;
+            color: #fff;
+        }
+        #clearBtn:hover {
+            background-color: #757575;
+        }
+        #continueBtn {
+            background-color: var(--success-color);
+            color: #fff;
+            display: none;
+        }
+        #continueBtn:hover {
+            background-color: #388E3C;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: var(--card-background);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border-radius: 12px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .message-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .important-note {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            border-left: 5px solid var(--danger-color);
+        }
+        .instruction-box {
+            background-color: #e3f2fd;
+            border-left: 5px solid var(--primary-color);
+        }
+        .instruction-box ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .result-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item h4 {
+            font-size: 1.1rem;
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        .result-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .result-item li {
+            margin-bottom: 5px;
+        }
         .win {
-            color: #28a745;
-            font-weight: bold;
+            color: var(--success-color);
+            font-weight: 600;
         }
         .lose {
-            color: #dc3545;
-            font-weight: bold;
+            color: var(--danger-color);
+            font-weight: 600;
         }
-        .title {
-            text-align: center;
+        .summary {
+            font-weight: 600;
+            color: #555;
+        }
+        .summary span {
+            color: var(--success-color);
+        }
+        @media (max-width: 600px) {
+            body {
+                padding-top: 150px;
+                font-size: 16px;
+            }
+            .header {
+                padding: 10px;
+            }
+            .header-title {
+                font-size: 1.2rem;
+            }
+            .button-group button {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            .section-title {
+                font-size: 1rem;
+            }
+            .result-item h4 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<pre id="output">
-<div class="title">
-╔═════════════════════════════════════════╗
-║          โปรแกรมคำนวณการเดินเงิน         ║
-╚═════════════════════════════════════════╝
-</div>
-🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
+<header class="header">
+    <div class="header-title">โปรแกรมคำนวณการเดินเงิน</div>
+    <div class="input-group">
+        <div class="input-field-container">
+            <label for="lastBetAmount">💰 เงินเดิมพันต่อตัวล่าสุด:</label>
+            <input type="number" id="lastBetAmount" placeholder="เช่น 10" value="10">
+        </div>
+        <div class="button-group">
+            <button id="analyzeBtn">📊 วิเคราะห์</button>
+            <button id="clearBtn">🔄 ล้างตัวเลข</button>
+            <button id="continueBtn">💪 สู้ต่อ</button>
+        </div>
+    </div>
+</header>
 
-📝 คำอธิบายการใช้งาน:
-โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
-1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
-2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
-
-💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
-</pre>
-<div class="input-line">
-    <input type="number" id="betInput" value="10">
-    <button id="analyzeBtn">📊 วิเคราะห์</button>
-    <button id="clearBtn">🔄 ล้างตัวเลข</button>
-</div>
-<div class="input-line" style="justify-content: center;">
-    <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+<div class="container" id="mainContainer">
+    <div id="initialContent">
+        <div class="message-box important-note">
+            🚨 **สำคัญมาก:** เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที (ทุนคืนเท่านั้น)
+        </div>
+        <div class="message-box instruction-box">
+            <p>📝 **คำอธิบายการใช้งาน:**</p>
+            <ol>
+                <li>กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป</li>
+                <li>กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div id="results" style="display:none;">
+        <h3 class="section-title">✨ ผลลัพธ์การวิเคราะห์ ✨</h3>
+        <div id="resultsContent"></div>
+    </div>
 </div>
 
 <script>
-    const outputElement = document.getElementById('output');
-    const betInput = document.getElementById('betInput');
+    const lastBetAmountInput = document.getElementById('lastBetAmount');
     const analyzeBtn = document.getElementById('analyzeBtn');
     const clearBtn = document.getElementById('clearBtn');
     const continueBtn = document.getElementById('continueBtn');
+    const initialContent = document.getElementById('initialContent');
+    const resultsDiv = document.getElementById('results');
+    const resultsContent = document.getElementById('resultsContent');
 
-    let currentTotalLoss = 0;
-    let currentPeriod = 0;
+    let totalLoss = 0;
+    let period = 0;
+    let betMultiplier = 5;
+    let ratio = 4.9;
 
-    analyzeBtn.addEventListener('click', analyze);
-    clearBtn.addEventListener('click', clear);
-    continueBtn.addEventListener('click', continueAnalysis);
+    function formatNumber(num) {
+        return (Math.round(num * 100) / 100).toFixed(2);
+    }
 
     function analyze() {
-        const betValue = parseFloat(betInput.value);
-        if (isNaN(betValue) || betValue <= 0) {
+        const betAmount = parseFloat(lastBetAmountInput.value);
+
+        if (isNaN(betAmount) || betAmount <= 0) {
             alert('กรุณากรอกตัวเลขที่ถูกต้อง');
             return;
         }
 
-        currentTotalLoss = betValue * 5;
-        currentPeriod = 1;
+        totalLoss = betAmount * betMultiplier;
+        period = 1;
+        resultsContent.innerHTML = '';
+        resultsDiv.style.display = 'block';
         
-        let output = generateHeader(betValue);
-        output += generatePeriods(1, 5, currentTotalLoss);
-        
-        outputElement.innerHTML = output;
+        let initialSummary = document.createElement('p');
+        initialSummary.className = 'summary';
+        initialSummary.innerHTML = `✅ ทุนที่เสียไปทั้งหมดเริ่มต้น: <span>${formatNumber(totalLoss)} บาท</span> (คำนวณจาก ${betAmount} x ${betMultiplier})`;
+        resultsContent.appendChild(initialSummary);
+
+        generatePeriods(5);
         continueBtn.style.display = 'inline-block';
     }
 
-    function continueAnalysis() {
-        let output = outputElement.innerHTML;
-        const totalLossForNextBatch = calculateLossUntilPeriod(currentTotalLoss, currentPeriod, 5);
-        output += generatePeriods(currentPeriod + 5, currentPeriod + 9, totalLossForNextBatch);
-
-        outputElement.innerHTML = output;
-        currentPeriod += 5;
-    }
-
-    function generateHeader(betValue) {
-        return `
-<div class="title">
-╔═════════════════════════════════════════╗
-║          โปรแกรมคำนวณการเดินเงิน         ║
-╚═════════════════════════════════════════╝
-</div>
-🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
-
-📝 คำอธิบายการใช้งาน:
-โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
-1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
-2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
-
-💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
-[ ${betValue} ]
-
------------------------------------------
-[  📊 วิเคราะห์  ]     [  🔄 ล้างตัวเลข  ]
------------------------------------------
-            ✨ ผลลัพธ์การวิเคราะห์ ✨
------------------------------------------
-✅ ทุนที่เสียไปทั้งหมดเริ่มต้น: ${currentTotalLoss.toFixed(2)} บาท (คำนวณจาก ${betValue} x 5)
-`;
-    }
-
-    function generatePeriods(start, end, initialLoss) {
-        let periodOutput = '';
-        let totalLoss = initialLoss;
-
-        for (let i = start; i <= end; i++) {
-            const nextBetPerUnit = totalLoss / 4.9;
-            const nextTotalBet = nextBetPerUnit * 5;
+    function generatePeriods(numPeriods) {
+        for (let i = 0; i < numPeriods; i++) {
+            const nextBetPerUnit = totalLoss / ratio;
+            const nextTotalBet = nextBetPerUnit * betMultiplier;
             const newTotalLoss = totalLoss + nextTotalBet;
 
-            periodOutput += `
------------------------------------------
-🎯 งวดที่ ${i}:
-  - เงินเดิมพันต่อตัว = ${nextBetPerUnit.toFixed(2)} บาท
-  - เงินเดิมพันรวม = ${nextTotalBet.toFixed(2)} บาท
-  - ✅ <span class="win">หากชนะในงวดนี้ 🥳 คุณจะได้ทุนทั้งหมด ${totalLoss.toFixed(2)} บาทคืน</span>
-  - ❌ <span class="lose">หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${newTotalLoss.toFixed(2)} บาท</span>
-`;
-            if (i === end) {
-                periodOutput += `
------------------------------------------
-`;
-            }
+            let resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <h4>🎯 งวดที่ ${period}:</h4>
+                <ul>
+                    <li>เงินเดิมพันต่อตัว = ${formatNumber(nextBetPerUnit)} บาท</li>
+                    <li>เงินเดิมพันรวม = ${formatNumber(nextTotalBet)} บาท</li>
+                    <li><span class="win">✅ หากชนะในงวดนี้ 🥳 คุณจะได้ทุนทั้งหมด ${formatNumber(totalLoss)} บาทคืน</span></li>
+                    <li><span class="lose">❌ หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(newTotalLoss)} บาท</span></li>
+                </ul>
+            `;
+            resultsContent.appendChild(resultItem);
+            
             totalLoss = newTotalLoss;
+            period++;
         }
-        currentTotalLoss = totalLoss;
-        return periodOutput;
-    }
-
-    function calculateLossUntilPeriod(initialLoss, currentPeriod, numPeriodsToAdd) {
-        let loss = initialLoss;
-        for (let i = 0; i < numPeriodsToAdd; i++) {
-            loss = loss + (loss / 4.9) * 5;
-        }
-        return loss;
     }
 
     function clear() {
-        betInput.value = '';
-        outputElement.innerHTML = `
-<div class="title">
-╔═════════════════════════════════════════╗
-║          โปรแกรมคำนวณการเดินเงิน         ║
-╚═════════════════════════════════════════╝
-</div>
-🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
-
-📝 คำอธิบายการใช้งาน:
-โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
-1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
-2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
-
-💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
-`;
+        lastBetAmountInput.value = '';
+        resultsDiv.style.display = 'none';
         continueBtn.style.display = 'none';
+        totalLoss = 0;
+        period = 0;
     }
+
+    function continueAnalysis() {
+        generatePeriods(5);
+    }
+
+    analyzeBtn.addEventListener('click', analyze);
+    clearBtn.addEventListener('click', clear);
+    continueBtn.addEventListener('click', continueAnalysis);
 </script>
 
 </body>
