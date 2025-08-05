@@ -3,90 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สูตรตามทุน</title>
+    <title>โปรแกรมคำนวณการเดินเงิน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #f5f5f5;
+            --background-color: #e3f2fd;
+            --text-color: #333;
+            --card-background: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+            --highlight-color: #00796B;
+        }
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            box-sizing: border-box;
         }
-        label, button {
-            display: block;
-            margin-bottom: 10px;
+        .header {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-background);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
         }
-        input {
-            padding: 8px;
-            margin-bottom: 10px;
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .header-right {
+            max-width: 50%;
+        }
+        .header-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .input-field-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             width: 100%;
         }
-        .result {
-            background-color: #e0f7fa;
+        .input-field-container label {
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .input-field-container input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .button-group button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        #analyzeBtn {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        #analyzeBtn:hover {
+            background-color: #1976D2;
+        }
+        #clearBtn {
+            background-color: #9E9E9E;
+            color: #fff;
+        }
+        #clearBtn:hover {
+            background-color: #757575;
+        }
+        #continueBtn {
+            background-color: var(--success-color);
+            color: #fff;
+            display: none;
+        }
+        #continueBtn:hover {
+            background-color: #388E3C;
+        }
+        .instruction-box-header {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding: 10px;
+            background-color: #f1f8e9;
+            border-left: 3px solid var(--success-color);
+            border-radius: 4px;
+        }
+        .content-container {
+            width: 100%;
+            max-width: 800px;
+            flex: 1;
+            background-color: var(--card-background);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border-radius: 12px;
+            box-sizing: border-box;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .message-box {
             padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .important-note {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            border-left: 5px solid var(--danger-color);
+            font-size: 1.1rem;
+        }
+        .instruction-box {
+            background-color: #e3f2fd;
+            border-left: 5px solid var(--primary-color);
+            font-size: 1.1rem;
+        }
+        .result-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item-main-line {
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--primary-color);
+        }
+        .result-item-sub-line {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .result-bet-highlight {
+            color: var(--danger-color); /* เปลี่ยนสีเป็นสีแดงตามคำขอ */
+            font-weight: 800;
+        }
+        .win {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        .lose {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        .summary {
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .initial-loss-amount {
+            color: var(--success-color);
+            font-size: 1.5em;
+            font-weight: 800;
+        }
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .header-left, .header-right {
+                max-width: 100%;
+                width: 100%;
+            }
+            .header-title {
+                text-align: left;
+                font-size: 1.2rem;
+            }
+            .input-field-container input {
+                width: 80px;
+            }
+            .button-group button {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            .result-item-main-line {
+                font-size: 1.2rem;
+            }
+            .result-item-sub-line {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>สูตรการแทงตามทุน</h1>
-
-    <div class="container">
-        <label for="startBet">ยอดเดิมพันเริ่มต้น (บาท):</label>
-        <input type="number" id="startBet" placeholder="กรอกยอดเดิมพันเริ่มต้น (เช่น 10 บาท)" value="10">
-
-        <button onclick="calculateBet()">คำนวณ</button>
-
-        <div class="result" id="result">
-            <!-- ผลลัพธ์จะถูกแสดงที่นี่ -->
+<header class="header" id="mainHeader">
+    <div class="header-left">
+        <div class="header-title">วิเคราะห์การเดินเงิน</div>
+        <div class="input-group">
+            <div class="input-field-container">
+                <label for="lastBetAmount">💰 เงินเดิมพันต่อตัวล่าสุด:</label>
+                <input type="number" id="lastBetAmount" placeholder="เช่น 10" value="10">
+            </div>
+            <div class="button-group">
+                <button id="analyzeBtn">📊 วิเคราะห์</button>
+                <button id="clearBtn">🔄 ล้างตัวเลข</button>
+                <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+            </div>
         </div>
     </div>
+    <div class="header-right">
+        <div class="instruction-box-header">
+            <p><strong>คำชี้แจง:</strong></p>
+            <p>ใช้เพื่อการเดินเงินเพื่อ**ถอนทุน**ที่เสียไปเพื่อเท่านั้น</p>
+            <p>หากชนะให้**หยุด**เดินเงินทันที</p>
+        </div>
+    </div>
+</header>
 
-    <script>
-        function calculateBet() {
-            // รับค่าจาก input
-            let startBet = parseFloat(document.getElementById("startBet").value);
-            
-            let totalLoss = 0;
-            let results = "";
-            let i = 1;
-            let bet = startBet;
-            let totalBet = 0;
-            
-            // คำนวณการแทง 5 ตา
-            while (i <= 5) {
-                // คำนวณกำไร
-                let profit = (bet * 9.9) - (bet * 5);
-                totalLoss += bet; // คำนวณทุนที่เสีย
-                totalBet = totalLoss;
-                
-                results += `ตาที่ ${i} : \n`;
-                results += `ยอดแทง: ${bet} บาท\n`;
-                results += `กำไรจากการชนะ: ${profit} บาท\n`;
-                results += `หักทุนที่เสียจากตาที่แล้ว: ${totalLoss} บาท\n`;
-                
-                // เพิ่มยอดเดิมพันถ้ายังไม่ชนะ
-                if (profit < totalLoss) {
-                    bet = totalLoss / 9.9;
-                }
+<div class="content-container" id="mainContainer">
+    <div id="initialContent">
+        <div class="message-box important-note">
+            🚨 **สำคัญมาก:** เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที (ทุนคืนเท่านั้น)
+        </div>
+        <div class="message-box instruction-box">
+            <p>📝 **คำอธิบายการใช้งาน:**</p>
+            <ol>
+                <li>กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป</li>
+                <li>กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในการแทงงวดต่อไป</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div id="results" style="display:none;">
+        <h3 class="section-title">✨ ผลลัพธ์การวิเคราะห์ ✨</h3>
+        <div id="resultsContent"></div>
+    </div>
+</div>
 
-                i++;
-            }
-            
-            // แสดงผลลัพธ์
-            document.getElementById("result").innerText = results;
+<script>
+    const mainHeader = document.getElementById('mainHeader');
+    const lastBetAmountInput = document.getElementById('lastBetAmount');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const continueBtn = document.getElementById('continueBtn');
+    const initialContent = document.getElementById('initialContent');
+    const resultsDiv = document.getElementById('results');
+    const resultsContent = document.getElementById('resultsContent');
+    
+    let totalLoss = 0;
+    let period = 0;
+    let betMultiplier = 5;
+    let ratio = 4.9;
+
+    function formatNumber(num) {
+        return (Math.round(num * 100) / 100).toFixed(2);
+    }
+
+    function analyze() {
+        const betAmount = parseFloat(lastBetAmountInput.value);
+
+        if (isNaN(betAmount) || betAmount <= 0) {
+            alert('กรุณากรอกตัวเลขที่ถูกต้อง');
+            return;
         }
-    </script>
+
+        totalLoss = betAmount * betMultiplier;
+        period = 1;
+        resultsContent.innerHTML = '';
+        initialContent.style.display = 'none';
+        resultsDiv.style.display = 'block';
+        
+        let initialSummary = document.createElement('p');
+        initialSummary.className = 'summary';
+        initialSummary.innerHTML = `✅ ทุนที่เสียไปทั้งหมดเริ่มต้น: <span class="initial-loss-amount">${formatNumber(totalLoss)} บาท</span>`;
+        resultsContent.appendChild(initialSummary);
+
+        generatePeriods(5);
+        continueBtn.style.display = 'inline-block';
+    }
+
+    function generatePeriods(numPeriods) {
+        for (let i = 0; i < numPeriods; i++) {
+            const nextBetPerUnit_decimal = totalLoss / ratio;
+            const nextBetPerUnit_rounded = Math.ceil(nextBetPerUnit_decimal);
+
+            const nextTotalBet = nextBetPerUnit_rounded * betMultiplier;
+            const newTotalLoss = totalLoss + nextTotalBet;
+
+            let resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <p class="result-item-main-line">
+                    🎯 งวดที่ ${period}: <span class="result-bet-highlight">แทงตัวละ <span style="font-size: 1.1em;">${nextBetPerUnit_rounded}</span> (รวม ${nextTotalBet} บาท)</span>
+                </p>
+                <p class="result-item-sub-line win">✅ หากชนะในงวดนี้ 🥳 คุณจะได้ทุนทั้งหมด ${formatNumber(totalLoss)} บาทคืน</p>
+                <p class="result-item-sub-line lose">❌ หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(newTotalLoss)} บาท</p>
+            `;
+            resultsContent.appendChild(resultItem);
+            
+            totalLoss = newTotalLoss;
+            period++;
+        }
+    }
+
+    function clear() {
+        lastBetAmountInput.value = '';
+        initialContent.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        continueBtn.style.display = 'none';
+        
+        totalLoss = 0;
+        period = 0;
+    }
+
+    function continueAnalysis() {
+        generatePeriods(5);
+    }
+    
+    analyzeBtn.addEventListener('click', analyze);
+    clearBtn.addEventListener('click', clear);
+    continueBtn.addEventListener('click', continueAnalysis);
+</script>
 
 </body>
 </html>
