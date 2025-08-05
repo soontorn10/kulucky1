@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณการเดินเงินทุนคืน</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f5e9;
+            color: #212121;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        pre {
+            background-color: #f0fff0;
+            padding: 20px;
+            border: 1px solid #c8e6c9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            white-space: pre-wrap;
+            width: 100%;
+            max-width: 600px;
+        }
+        input, button {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            cursor: pointer;
+            padding: 8px 15px;
+        }
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .win {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .lose {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .title {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<pre id="output">
+<div class="title">
+╔═════════════════════════════════════════╗
+║          โปรแกรมคำนวณการเดินเงิน         ║
+╚═════════════════════════════════════════╝
+</div>
+🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
+
+📝 คำอธิบายการใช้งาน:
+โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
+1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
+2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
+
+💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
+</pre>
+<div class="input-line">
+    <input type="number" id="betInput" value="10">
+    <button id="analyzeBtn">📊 วิเคราะห์</button>
+    <button id="clearBtn">🔄 ล้างตัวเลข</button>
+</div>
+<div class="input-line" style="justify-content: center;">
+    <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+</div>
+
+<script>
+    const outputElement = document.getElementById('output');
+    const betInput = document.getElementById('betInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const continueBtn = document.getElementById('continueBtn');
+
+    let currentTotalLoss = 0;
+    let currentPeriod = 0;
+
+    analyzeBtn.addEventListener('click', analyze);
+    clearBtn.addEventListener('click', clear);
+    continueBtn.addEventListener('click', continueAnalysis);
+
+    function analyze() {
+        const betValue = parseFloat(betInput.value);
+        if (isNaN(betValue) || betValue <= 0) {
+            alert('กรุณากรอกตัวเลขที่ถูกต้อง');
+            return;
+        }
+
+        currentTotalLoss = betValue * 5;
+        currentPeriod = 1;
+        
+        let output = generateHeader(betValue);
+        output += generatePeriods(1, 5, currentTotalLoss);
+        
+        outputElement.innerHTML = output;
+        continueBtn.style.display = 'inline-block';
+    }
+
+    function continueAnalysis() {
+        let output = outputElement.innerHTML;
+        const totalLossForNextBatch = calculateLossUntilPeriod(currentTotalLoss, currentPeriod, 5);
+        output += generatePeriods(currentPeriod + 5, currentPeriod + 9, totalLossForNextBatch);
+
+        outputElement.innerHTML = output;
+        currentPeriod += 5;
+    }
+
+    function generateHeader(betValue) {
+        return `
+<div class="title">
+╔═════════════════════════════════════════╗
+║          โปรแกรมคำนวณการเดินเงิน         ║
+╚═════════════════════════════════════════╝
+</div>
+🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
+
+📝 คำอธิบายการใช้งาน:
+โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
+1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
+2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
+
+💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
+[ ${betValue} ]
+
+-----------------------------------------
+[  📊 วิเคราะห์  ]     [  🔄 ล้างตัวเลข  ]
+-----------------------------------------
+            ✨ ผลลัพธ์การวิเคราะห์ ✨
+-----------------------------------------
+✅ ทุนที่เสียไปทั้งหมดเริ่มต้น: ${currentTotalLoss.toFixed(2)} บาท (คำนวณจาก ${betValue} x 5)
+`;
+    }
+
+    function generatePeriods(start, end, initialLoss) {
+        let periodOutput = '';
+        let totalLoss = initialLoss;
+
+        for (let i = start; i <= end; i++) {
+            const nextBetPerUnit = totalLoss / 4.9;
+            const nextTotalBet = nextBetPerUnit * 5;
+            const newTotalLoss = totalLoss + nextTotalBet;
+
+            periodOutput += `
+-----------------------------------------
+🎯 งวดที่ ${i}:
+  - เงินเดิมพันต่อตัว = ${nextBetPerUnit.toFixed(2)} บาท
+  - เงินเดิมพันรวม = ${nextTotalBet.toFixed(2)} บาท
+  - ✅ <span class="win">หากชนะในงวดนี้ 🥳 คุณจะได้ทุนทั้งหมด ${totalLoss.toFixed(2)} บาทคืน</span>
+  - ❌ <span class="lose">หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${newTotalLoss.toFixed(2)} บาท</span>
+`;
+            if (i === end) {
+                periodOutput += `
+-----------------------------------------
+`;
+            }
+            totalLoss = newTotalLoss;
+        }
+        currentTotalLoss = totalLoss;
+        return periodOutput;
+    }
+
+    function calculateLossUntilPeriod(initialLoss, currentPeriod, numPeriodsToAdd) {
+        let loss = initialLoss;
+        for (let i = 0; i < numPeriodsToAdd; i++) {
+            loss = loss + (loss / 4.9) * 5;
+        }
+        return loss;
+    }
+
+    function clear() {
+        betInput.value = '';
+        outputElement.innerHTML = `
+<div class="title">
+╔═════════════════════════════════════════╗
+║          โปรแกรมคำนวณการเดินเงิน         ║
+╚═════════════════════════════════════════╝
+</div>
+🚨 **สำคัญมาก: เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที**
+
+📝 คำอธิบายการใช้งาน:
+โปรแกรมนี้จะคำนวณเงินเดิมพันที่คุณต้องลงในแต่ละงวด เพื่อให้ได้ทุนที่เสียไปคืนมาทั้งหมด (ทุนคืนเท่านั้น)
+1. กรอกเงินเดิมพันต่อตัวล่าสุดที่คุณเสียไป
+2. กดปุ่ม "วิเคราะห์" เพื่อดูผลลัพธ์ในแต่ละงวด
+
+💰 กรอกเงินเดิมพันต่อตัวล่าสุด:
+`;
+        continueBtn.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
