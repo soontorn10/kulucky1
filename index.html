@@ -253,6 +253,14 @@
             font-size: 1em;
         }
         
+        .initial-bet-highlight .section-title {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
         @media (max-width: 600px) {
             .button-group button {
                 width: 100%;
@@ -458,22 +466,25 @@
 
         if (found) {
             let resultHtml = `
-                <h3 class="section-title">✨ แผนการแทงสำหรับทุน <b>${formatNumber(inputCapital)} บาท</b> ✨</h3>
+                <div class="initial-bet-highlight">
+                    <h3 class="section-title">✨ แผนการแทงสำหรับทุน <b>${formatNumber(inputCapital)} บาท</b> ✨</h3>
+                    <p class="initial-bet-main-line">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">${recommendedBetPerUnit}</span> (รวม ${initialBet} บาท)</p>
+                    <p class="result-item-sub-line win">✅ ถ้าชนะ: คุณจะได้กำไร ${formatNumber(winAmount)} บาท</p>
+                    <p class="result-item-sub-line lose">❌ ถ้าเสีย: ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(initialBet)} บาท</p>
+                </div>
+            `;
+            
+            resultHtml += `
                 <div class="message-box instruction-box">
                     <p>📝 **วิธีแทง:**</p>
                     <p>เลือกแทง 1 หลัก (หลักหน่วยหรือหลักสิบ) 5 ตัว เช่น "ต่ำ" (0,1,2,3,4) หรือ "สูง" (5,6,7,8,9)</p>
                 </div>
             `;
-            
+
             let initialBet = recommendedBetPerUnit * betMultiplier;
             let winAmount = (recommendedBetPerUnit * newRatio) - initialBet;
             
             resultHtml += `
-                <div class="initial-bet-highlight">
-                    <p class="initial-bet-main-line">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">${recommendedBetPerUnit}</span> (รวม ${initialBet} บาท)</p>
-                    <p class="result-item-sub-line win">✅ ถ้าชนะ: คุณจะได้กำไร ${formatNumber(winAmount)} บาท</p>
-                    <p class="result-item-sub-line lose">❌ ถ้าเสีย: ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(initialBet)} บาท</p>
-                </div>
                 <p style="margin-top: 20px;"><b>ถ้าเสีย ให้เดินเกมตามแผนต่อไปนี้:</b></p>
             `;
 
