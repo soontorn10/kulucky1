@@ -244,6 +244,15 @@
             font-weight: 800;
             color: var(--success-color);
         }
+        
+        /* CSS ที่เพิ่มเข้ามาเพื่อปรับขนาดตัวอักษรของงวดที่ 1-5 */
+        .smaller-text {
+            font-size: 1rem; /* ปรับขนาดตัวอักษรให้เล็กลง */
+        }
+        .smaller-text .result-bet-highlight {
+            font-size: 1.1em; /* ทำให้ตัวเลขยังคงดูเด่น */
+        }
+        
         @media (max-width: 600px) {
             .button-group button {
                 width: 100%;
@@ -413,6 +422,8 @@
         const periodsToSurvive = 5;
         let recommendedBetPerUnit = 0;
         let found = false;
+        
+        const newRatio = 9.9; // อัตราส่วนที่ปรับปรุงใหม่
 
         for (let initialBetPerUnitCandidate = 1; initialBetPerUnitCandidate < inputCapital; initialBetPerUnitCandidate++) {
             let currentLoss = 0;
@@ -428,7 +439,7 @@
             }
 
             for (let i = 0; i < periodsToSurvive && canSurvive; i++) {
-                const nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                const nextBetPerUnit = Math.ceil(currentLoss / newRatio);
                 const nextTotalBet = nextBetPerUnit * betMultiplier;
                 
                 totalMoneyNeeded += nextTotalBet;
@@ -457,12 +468,12 @@
             `;
             
             let initialBet = recommendedBetPerUnit * betMultiplier;
-            let initialWinAmount = (recommendedBetPerUnit * ratio) - initialBet;
+            let winAmount = (recommendedBetPerUnit * newRatio) - initialBet;
             
             resultHtml += `
                 <div class="initial-bet-highlight">
                     <p class="initial-bet-main-line">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">${recommendedBetPerUnit}</span> (รวม ${initialBet} บาท)</p>
-                    <p class="result-item-sub-line win">✅ ถ้าชนะ: คุณจะได้กำไร ${formatNumber(initialWinAmount)} บาท</p>
+                    <p class="result-item-sub-line win">✅ ถ้าชนะ: คุณจะได้กำไร ${formatNumber(winAmount)} บาท</p>
                     <p class="result-item-sub-line lose">❌ ถ้าเสีย: ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(initialBet)} บาท</p>
                 </div>
                 <p style="margin-top: 20px;"><b>ถ้าเสีย ให้เดินเกมตามแผนต่อไปนี้:</b></p>
@@ -470,11 +481,11 @@
 
             let currentLoss = initialBet;
             for (let i = 1; i <= periodsToSurvive; i++) {
-                const nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                const nextBetPerUnit = Math.ceil(currentLoss / newRatio);
                 const nextTotalBet = nextBetPerUnit * betMultiplier;
                 
                 resultHtml += `
-                    <div class="result-item">
+                    <div class="result-item smaller-text">
                         <p class="result-item-main-line">🎯 งวดที่ ${i}: <span class="result-bet-highlight">แทงตัวละ ${nextBetPerUnit} (รวม ${nextTotalBet} บาท)</span></p>
                     </div>
                 `;
