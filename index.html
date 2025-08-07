@@ -301,7 +301,7 @@
     </style>
 </head>
 <body>
-    <div class="top-nav" id="topNav" style="display: none;">
+    <div class="top-nav" id="topNav">
         <button id="homeBtn" class="nav-button">🏠</button>
         <button id="menuBtn" class="nav-button">☰</button>
     </div>
@@ -357,21 +357,6 @@
                     <label for="startBetInput">🎯 เริ่มแทงตัวละ (บาท):</label>
                     <input type="number" id="startBetInput" placeholder="เช่น 10">
                 </div>
-                <div class="input-field-container">
-                    <label for="numPeriodsInput">📅 ตามแผนการเดินเงินถึง (งวดที่):</label>
-                    <select id="numPeriodsInput">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5" selected>5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
                 <div class="action-button-group">
                     <button id="calculateRequiredCapitalBtn">💰 คำนวณเงินทุน</button>
                 </div>
@@ -409,7 +394,6 @@
 
         const requiredCapitalSection = document.getElementById('requiredCapitalSection');
         const startBetInput = document.getElementById('startBetInput');
-        const numPeriodsInput = document.getElementById('numPeriodsInput');
         const calculateRequiredCapitalBtn = document.getElementById('calculateRequiredCapitalBtn');
 
         const lossAnalysisSection = document.getElementById('lossAnalysisSection');
@@ -441,10 +425,8 @@
 
             if (pageId === 'initialContent') {
                 initialContent.style.display = 'block';
-                document.getElementById('topNav').style.display = 'none';
                 window.location.hash = '';
             } else {
-                document.getElementById('topNav').style.display = 'flex';
                 if (pageId === 'capitalAnalysisSection') {
                     capitalAnalysisSection.style.display = 'block';
                     window.location.hash = '#page1';
@@ -454,19 +436,18 @@
                 } else if (pageId === 'lossAnalysisSection') {
                     lossAnalysisSection.style.display = 'block';
                     window.location.hash = '#page3';
-                } else if (pageId === 'results-1') { // Results for Page 1
+                } else if (pageId === 'results1') {
                     resultsDiv.style.display = 'block';
                     window.location.hash = '#results1';
-                } else if (pageId === 'results-2') { // Results for Page 2
+                } else if (pageId === 'results2') {
                     resultsDiv.style.display = 'block';
                     window.location.hash = '#results2';
-                } else if (pageId === 'results-3') { // Results for Page 3
+                } else if (pageId === 'results3') {
                     resultsDiv.style.display = 'block';
                     window.location.hash = '#results3';
                 }
             }
             
-            // Highlight active button in nav menu
             document.querySelectorAll('.nav-menu button').forEach(btn => btn.classList.remove('active'));
             if (activeNav) {
                 document.getElementById(activeNav).classList.add('active');
@@ -545,19 +526,20 @@
             }
             
             resultsContent.innerHTML = resultHtml;
-            showPage('results-1', 'navPage1');
+            showPage('results1', 'navPage1');
         }
 
         function calculateRequiredCapital() {
             const startBet = parseFloat(startBetInput.value);
-            const numPeriods = parseInt(numPeriodsInput.value);
-            if (isNaN(startBet) || startBet <= 0 || isNaN(numPeriods) || numPeriods <= 0) {
+            const numPeriods = 5; // Fixed periods
+            if (isNaN(startBet) || startBet <= 0) {
                 alert('กรุณากรอกตัวเลขที่ถูกต้อง');
                 return;
             }
 
             let cumulativeCost = 0;
             let currentBet = startBet;
+            
             for (let i = 1; i <= numPeriods; i++) {
                 const totalBet = currentBet * betMultiplier;
                 cumulativeCost += totalBet;
@@ -575,33 +557,27 @@
                 <p style="margin-top:20px; font-weight:600; font-size:1.1rem; color: #555;">สำหรับแทงตามแผนการเดินเงินต่อจากนี้:</p>
             `;
             
+            let currentLoss = 0;
             currentBet = startBet;
-            cumulativeCost = 0;
             for (let i = 1; i <= 10; i++) {
-                const totalBet = currentBet * betMultiplier;
+                let totalBet = currentBet * betMultiplier;
                 
-                if(i > numPeriods && i === numPeriods + 1){
-                    resultHtml += `
-                        <div class="message-box important-note">
-                            ❗️ หากทุนไม่พอสำหรับงวดถัดไป!
-                        </div>
-                    `;
-                }
-                
-                let lineText;
                 if(i > numPeriods){
-                     lineText = `<div class="capital-bet-line" style="color: var(--danger-color);">❗️ งวดที่ ${i} ต้องใช้เงิน ${currentBet} (รวม ${totalBet} บาท)</div>`;
+                     if(i === numPeriods + 1){
+                         resultHtml += `<div class="message-box important-note">❗️ หากทุนไม่พอสำหรับงวดถัดไป!</div>`;
+                     }
+                     resultHtml += `<div class="capital-bet-line" style="color: var(--danger-color);">❗️ งวดที่ ${i} ต้องใช้เงิน ${currentBet} (รวม ${totalBet} บาท)</div>`;
                 } else {
-                    lineText = `<div class="capital-bet-line" style="color: var(--primary-color);">❌ งวดที่ ${i} (ถ้าเสีย): ต้องแทงตัวละ ${currentBet} (รวม ${totalBet} บาท)</div>`;
+                    let linePrefix = (i === 1) ? '❌ งวดที่ 1: ' : `❌ งวดที่ ${i}: `;
+                    resultHtml += `<div class="capital-bet-line" style="color: var(--primary-color);">${linePrefix} ต้องแทงตัวละ ${currentBet} (รวม ${totalBet} บาท)</div>`;
                 }
-
-                resultHtml += lineText;
-                cumulativeCost += totalBet;
-                currentBet = Math.ceil(cumulativeCost / actualProfitRatio);
+                
+                currentLoss += totalBet;
+                currentBet = Math.ceil(currentLoss / actualProfitRatio);
             }
 
             resultsContent.innerHTML = resultHtml;
-            showPage('results-2', 'navPage2');
+            showPage('results2', 'navPage2');
         }
 
         function analyzeLoss() {
@@ -633,7 +609,7 @@
             }
             
             resultsContent.innerHTML = resultHtml;
-            showPage('results-3', 'navPage3');
+            showPage('results3', 'navPage3');
         }
 
         function handleHashChange() {
@@ -645,11 +621,14 @@
             } else if (hash === '#page3') {
                 showPage('lossAnalysisSection', 'navPage3');
             } else if (hash === '#results1') {
-                analyzeCapital(); // Re-run analysis to restore content
+                totalCapitalInput.value = totalCapitalInput.value || 500;
+                analyzeCapital();
             } else if (hash === '#results2') {
-                calculateRequiredCapital(); // Re-run analysis to restore content
+                startBetInput.value = startBetInput.value || 10;
+                calculateRequiredCapital();
             } else if (hash === '#results3') {
-                analyzeLoss(); // Re-run analysis to restore content
+                totalLossInput.value = totalLossInput.value || 75;
+                analyzeLoss();
             } else {
                 showPage('initialContent');
             }
