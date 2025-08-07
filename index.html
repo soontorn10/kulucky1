@@ -36,25 +36,73 @@
             border-radius: 12px;
             padding: 15px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            gap: 20px;
-            box-sizing: border-box;
             margin-bottom: 20px;
-        }
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .header-right {
-            max-width: 50%;
         }
         .header-title {
             text-align: center;
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--primary-color);
+        }
+        .content-container {
+            width: 100%;
+            max-width: 800px;
+            flex: 1;
+            background-color: var(--card-background);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            border-radius: 12px;
+            box-sizing: border-box;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .initial-choice-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .initial-choice-section p {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .button-group button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        #showLossAnalysisBtn, #showCapitalAnalysisBtn {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+        #showLossAnalysisBtn:hover, #showCapitalAnalysisBtn:hover {
+            background-color: #388E3C;
+        }
+        .instruction-box-header {
+            font-size: 1rem;
+            line-height: 1.6;
+            padding: 15px;
+            background-color: #f1f8e9;
+            border-left: 5px solid var(--success-color);
+            border-radius: 4px;
+        }
+        .instruction-box-header h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--success-color);
+        }
+        .instruction-box-header hr {
+            border-color: #ddd;
+            margin: 10px 0;
         }
         .input-group {
             display: flex;
@@ -81,19 +129,6 @@
             box-sizing: border-box;
             font-size: 1.1rem;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        .button-group button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
         #analyzeBtn, #analyzeCapitalBtn {
             background-color: var(--primary-color);
             color: #fff;
@@ -108,11 +143,11 @@
         #clearBtn:hover {
             background-color: #757575;
         }
-        #continueBtn, #showLossAnalysisBtn, #showCapitalAnalysisBtn {
+        #continueBtn {
             background-color: var(--success-color);
             color: #fff;
         }
-        #continueBtn:hover, #showLossAnalysisBtn:hover, #showCapitalAnalysisBtn:hover {
+        #continueBtn:hover {
             background-color: #388E3C;
         }
         #backFromLossBtn, #backFromCapitalBtn {
@@ -121,25 +156,6 @@
         }
         #backFromLossBtn:hover, #backFromCapitalBtn:hover {
             background-color: #455A64;
-        }
-        .instruction-box-header {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            padding: 10px;
-            background-color: #f1f8e9;
-            border-left: 3px solid var(--success-color);
-            border-radius: 4px;
-        }
-        .content-container {
-            width: 100%;
-            max-width: 800px;
-            flex: 1;
-            background-color: var(--card-background);
-            box-shadow: 0 4px 15px var(--shadow-color);
-            border-radius: 12px;
-            box-sizing: border-box;
-            padding: 20px;
-            overflow-y: auto;
         }
         .section-title {
             font-size: 1.2rem;
@@ -205,7 +221,6 @@
             font-size: 1.5em;
             font-weight: 800;
         }
-        /* New styles for emphasis */
         .initial-bet-highlight {
             background-color: #e8f5e9;
             border: 2px solid var(--success-color);
@@ -222,15 +237,11 @@
         @media (max-width: 600px) {
             .header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
                 gap: 15px;
             }
-            .header-left, .header-right {
-                max-width: 100%;
-                width: 100%;
-            }
             .header-title {
-                text-align: left;
+                text-align: center;
                 font-size: 1.2rem;
             }
             .input-field-container input {
@@ -248,61 +259,36 @@
             .result-item-sub-line {
                 font-size: 0.9rem;
             }
+            .initial-choice-section p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
 
 <header class="header" id="mainHeader">
-    <div class="header-left">
-        <div class="header-title">Kulucky so-on</div>
-        
-        <div id="initialChoice">
-            <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">เลือกประเภทการวิเคราะห์:</p>
+    <div class="header-title">Kulucky so-on</div>
+</header>
+
+<div class="content-container" id="mainContainer">
+    <div id="initialContent">
+        <div class="initial-choice-section">
+            <p>เลือกประเภทการวิเคราะห์:</p>
             <div class="button-group">
                 <button id="showLossAnalysisBtn">ทุนที่เสียไปล่าสุด</button>
                 <button id="showCapitalAnalysisBtn">ทุนทั้งหมดที่มี</button>
             </div>
         </div>
 
-        <div id="lossAnalysisSection" style="display:none;">
-            <div class="input-group">
-                <div class="input-field-container">
-                    <label for="totalLossInput">💰 ทุนที่เสียไปทั้งหมด:</label>
-                    <input type="number" id="totalLossInput" placeholder="เช่น 75" value="">
-                </div>
-                <div class="button-group">
-                    <button id="analyzeBtn">📊 คำนวณ</button>
-                    <button id="clearBtn">🔄 ล้างตัวเลข</button>
-                    <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
-                    <button id="backFromLossBtn">🔙 กลับ</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="capitalAnalysisSection" style="display:none;">
-            <div class="input-group">
-                <div class="input-field-container">
-                    <label for="totalCapitalInput">💸 ทุนที่มีทั้งหมด:</label>
-                    <input type="number" id="totalCapitalInput" placeholder="เช่น 500">
-                </div>
-                <div class="button-group">
-                    <button id="analyzeCapitalBtn">📊 วิเคราะห์ทุน</button>
-                    <button id="backFromCapitalBtn">🔙 กลับ</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="header-right">
         <div class="instruction-box-header">
-            <p><strong>คำชี้แจงและคำแนะนำ:</strong></p>
+            <h4>คำชี้แจงและคำแนะนำ:</h4>
             <p>โปรแกรมนี้จะช่วยคุณวางแผนการเดินเงินเพื่อ "ถอนทุนคืน" จากการแทงแบบ 1 หลัก 5 ตัว (เช่น ต่ำ/สูง หรือ คู่/คี่)</p>
             <hr style="border-color:#ddd;">
             <p><b>[ วิธีการใช้งาน ]</b></p>
             <ol>
-                <li>**วิเคราะห์ทุนที่เสีย:** หากคุณเพิ่งเสียทุนไป ให้เลือก <b>"ทุนที่เสียไปล่าสุด"</b> เพื่อหาแผนการแทงต่อเนื่อง</li>
-                <li>**วิเคราะห์ทุนทั้งหมด:** หากคุณต้องการวางแผนการแทงตั้งแต่เริ่มต้น ให้เลือก <b>"ทุนทั้งหมดที่มี"</b> เพื่อหาจำนวนเงินที่ควรเริ่มแทงในงวดแรก</li>
+                <li><b>วิเคราะห์ทุนที่เสีย:</b> หากคุณเพิ่งเสียทุนไป ให้เลือก <b>"ทุนที่เสียไปล่าสุด"</b> เพื่อหาแผนการแทงต่อเนื่อง</li>
+                <li><b>วิเคราะห์ทุนทั้งหมด:</b> หากคุณต้องการวางแผนการแทงตั้งแต่เริ่มต้น ให้เลือก <b>"ทุนทั้งหมดที่มี"</b> เพื่อหาจำนวนเงินที่ควรเริ่มแทงในงวดแรก</li>
             </ol>
             <hr style="border-color:#ddd;">
             <p><b>[ ข้อควรจำ ]</b></p>
@@ -313,23 +299,35 @@
             </ul>
         </div>
     </div>
-</header>
-
-<div class="content-container" id="mainContainer">
-    <div id="initialContent">
-        <div class="message-box important-note">
-            🚨 **สำคัญมาก:** เมื่อคุณชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินทันที เพื่อกลับไปเล่นตามปกติ
-        </div>
-        <div class="message-box instruction-box">
-            <p>📝 **คำอธิบายการใช้งาน:**</p>
-            <ol>
-                <li>เลือกประเภทการวิเคราะห์ที่คุณต้องการ</li>
-                <li>ถ้าเลือก "ทุนที่เสียไปล่าสุด" ให้กรอกเงินทุนที่เสียไปทั้งหมดในรอบล่าสุด แล้วกด "คำนวณ"</li>
-                <li>ถ้าเลือก "ทุนทั้งหมดที่มี" ให้กรอกเงินทุนที่มี แล้วกด "วิเคราะห์ทุน" เพื่อหาจุดเริ่มต้นที่เหมาะสม</li>
-            </ol>
+    
+    <div id="lossAnalysisSection" style="display:none;">
+        <div class="input-group">
+            <div class="input-field-container">
+                <label for="totalLossInput">💰 ทุนที่เสียไปทั้งหมด:</label>
+                <input type="number" id="totalLossInput" placeholder="เช่น 75" value="">
+            </div>
+            <div class="button-group">
+                <button id="analyzeBtn">📊 คำนวณ</button>
+                <button id="clearBtn">🔄 ล้างตัวเลข</button>
+                <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+                <button id="backFromLossBtn">🔙 กลับ</button>
+            </div>
         </div>
     </div>
-    
+
+    <div id="capitalAnalysisSection" style="display:none;">
+        <div class="input-group">
+            <div class="input-field-container">
+                <label for="totalCapitalInput">💸 ทุนที่มีทั้งหมด:</label>
+                <input type="number" id="totalCapitalInput" placeholder="เช่น 500">
+            </div>
+            <div class="button-group">
+                <button id="analyzeCapitalBtn">📊 วิเคราะห์ทุน</button>
+                <button id="backFromCapitalBtn">🔙 กลับ</button>
+            </div>
+        </div>
+    </div>
+
     <div id="results" style="display:none;">
         <div id="resultsContent"></div>
     </div>
@@ -345,7 +343,6 @@
     const resultsDiv = document.getElementById('results');
     const resultsContent = document.getElementById('resultsContent');
 
-    const initialChoice = document.getElementById('initialChoice');
     const showLossAnalysisBtn = document.getElementById('showLossAnalysisBtn');
     const showCapitalAnalysisBtn = document.getElementById('showCapitalAnalysisBtn');
     const lossAnalysisSection = document.getElementById('lossAnalysisSection');
@@ -376,6 +373,8 @@
         period = 1;
         resultsContent.innerHTML = '';
         initialContent.style.display = 'none';
+        lossAnalysisSection.style.display = 'none';
+        capitalAnalysisSection.style.display = 'none';
         resultsDiv.style.display = 'block';
         
         let initialSummary = document.createElement('p');
@@ -413,10 +412,21 @@
 
     function clear() {
         totalLossInput.value = '';
+        totalCapitalInput.value = '';
         initialContent.style.display = 'block';
+        lossAnalysisSection.style.display = 'none';
+        capitalAnalysisSection.style.display = 'none';
         resultsDiv.style.display = 'none';
-        continueBtn.style.display = 'none';
         
+        totalLoss = 0;
+        period = 0;
+    }
+    
+    function showInitialState() {
+        initialContent.style.display = 'block';
+        lossAnalysisSection.style.display = 'none';
+        capitalAnalysisSection.style.display = 'none';
+        resultsDiv.style.display = 'none';
         totalLoss = 0;
         period = 0;
     }
@@ -434,6 +444,8 @@
         }
 
         initialContent.style.display = 'none';
+        lossAnalysisSection.style.display = 'none';
+        capitalAnalysisSection.style.display = 'none';
         resultsDiv.style.display = 'block';
         resultsContent.innerHTML = '';
 
@@ -523,37 +535,32 @@
         }
     }
     
-    // Original event listeners
+    // Event listeners
     analyzeBtn.addEventListener('click', analyze);
     clearBtn.addEventListener('click', clear);
     continueBtn.addEventListener('click', continueAnalysis);
     
-    // Event listeners for new buttons
     showLossAnalysisBtn.addEventListener('click', () => {
-        initialChoice.style.display = 'none';
-        lossAnalysisSection.style.display = 'block';
-        initialContent.style.display = 'block';
-        resultsDiv.style.display = 'none';
+        showInitialState(); // Show the main content area with instructions
+        initialContent.style.display = 'none'; // Hide the choice section
+        lossAnalysisSection.style.display = 'block'; // Show the loss analysis section
+        document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
     });
 
     showCapitalAnalysisBtn.addEventListener('click', () => {
-        initialChoice.style.display = 'none';
-        capitalAnalysisSection.style.display = 'block';
-        initialContent.style.display = 'block';
-        resultsDiv.style.display = 'none';
+        showInitialState(); // Show the main content area with instructions
+        initialContent.style.display = 'none'; // Hide the choice section
+        capitalAnalysisSection.style.display = 'block'; // Show the capital analysis section
+        document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
     });
 
     backFromLossBtn.addEventListener('click', () => {
-        initialChoice.style.display = 'block';
-        lossAnalysisSection.style.display = 'none';
+        showInitialState();
         clear();
     });
 
     backFromCapitalBtn.addEventListener('click', () => {
-        initialChoice.style.display = 'block';
-        capitalAnalysisSection.style.display = 'none';
-        totalCapitalInput.value = '';
-        resultsContent.innerHTML = '';
+        showInitialState();
         clear();
     });
     
