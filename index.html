@@ -435,45 +435,103 @@
         resultsDiv.style.display = 'block';
         resultsContent.innerHTML = '';
 
-        let resultHtml = `
-            <h3 class="section-title">✨ แผนการแทงสำหรับทุน ${formatNumber(inputCapital)} บาท ✨</h3>
-            <div class="message-box instruction-box">
-                <p>📝 **วิธีแทง:**</p>
-                <p>เลือกแทง 1 หลัก (หลักหน่วยหรือหลักสิบ) 5 ตัว เช่น "ต่ำ" (0,1,2,3,4) หรือ "สูง" (5,6,7,8,9)</p>
-            </div>
-            
-            <div class="initial-bet-highlight">
-                <p class="initial-bet-main-line">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">10</span> (รวม 50 บาท)</p>
-                <p class="result-item-sub-line win">✅ ถ้าถูกจะได้ กำไร 49 บาท</p>
-            </div>
-            <p style="margin-top: 20px;"><b>ถ้าแทงผิดให้เดินเกมต่อไปนี้:</b></p>
-        `;
-        
-        let currentLoss = 50; 
         const periodsToSurvive = 5;
+        let recommendedBetPerUnit = 0;
+        let found = false;
 
-        for (let i = 1; i <= periodsToSurvive; i++) {
-            const nextBetPerUnit = Math.ceil(currentLoss / ratio);
-            const nextTotalBet = nextBetPerUnit * betMultiplier;
-            const newTotalLoss = currentLoss + nextTotalBet;
+        for (let initialBetPerUnitCandidate = 1; initialBetPerUnitCandidate < inputCapital; initialBetPerUnitCandidate++) {
+            let currentLoss = 0;
+            let totalMoneyNeeded = 0;
+            let canSurvive = true;
 
-            resultHtml += `
-                <div class="result-item">
-                    <p class="result-item-main-line">
-                        🎯 งวดที่ ${i}: <span class="result-bet-highlight">แทงตัวละ ${nextBetPerUnit} (รวม ${nextTotalBet} บาท)</span>
-                    </p>
-                    <p class="result-item-sub-line win">✅ หากชนะในงวดนี้ 🥳 คุณจะได้ทุนคืนทั้งหมด ${formatNumber(currentLoss)} บาท</p>
-                    <p class="result-item-sub-line lose">❌ หากแพ้อีก 📉 ทุนที่เสียไปทั้งหมดจะกลายเป็น ${formatNumber(newTotalLoss)} บาท</p>
+            const firstTotalBet = initialBetPerUnitCandidate * betMultiplier;
+            totalMoneyNeeded += firstTotalBet;
+            currentLoss += firstTotalBet;
+
+            if (totalMoneyNeeded > inputCapital) {
+                canSurvive = false;
+            }
+
+            for (let i = 0; i < periodsToSurvive && canSurvive; i++) {
+                const nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                const nextTotalBet = nextBetPerUnit * betMultiplier;
+                
+                totalMoneyNeeded += nextTotalBet;
+                currentLoss += nextTotalBet;
+
+                if (totalMoneyNeeded > inputCapital) {
+                    canSurvive = false;
+                }
+            }
+
+            if (canSurvive) {
+                recommendedBetPerUnit = initialBetPerUnitCandidate;
+                found = true;
+            } else {
+                break;
+            }
+        }
+
+        if (found) {
+            let resultHtml = `
+                <h3 class="section-title">✨ แผนการแทงสำหรับทุน ${formatNumber(inputCapital)} บาท ✨</h3>
+                <div class="message-box instruction-box">
+                    <p>📝 **วิธีแทง:**</p>
+                    <p>เลือกแทง 1 หลัก (หลักหน่วยหรือหลักสิบ) 5 ตัว เช่น "ต่ำ" (0,1,2,3,4) หรือ "สูง" (5,6,7,8,9)</p>
                 </div>
+                <p style="margin-top: 20px;"><b>เมื่อแทงเสีย ให้เดินเกมตามแผนต่อไปนี้:</b></p>
             `;
-            currentLoss = newTotalLoss;
-        }
+            
+            let currentLoss = 0;
+            for (let i = 0; i <= periodsToSurvive; i++) {
+                let nextBetPerUnit;
+                if (i === 0) {
+                    nextBetPerUnit = recommendedBetPerUnit;
+                } else {
+                    nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                }
 
-        if (currentLoss > inputCapital) {
-            resultHtml += `<div class="message-box important-note">⚠️ ทุนของคุณ ${formatNumber(inputCapital)} บาท ไม่เพียงพอสำหรับแผนนี้</div>`;
-        }
+                const nextTotalBet = nextBetPerUnit * betMultiplier;
+                const newTotalLoss = currentLoss + nextTotalBet;
 
-        resultsContent.innerHTML = resultHtml;
+                let itemClass = 'result-item';
+                let mainLineClass = 'result-item-main-line';
+                let profit = (nextBetPerUnit * ratio) - nextTotalBet;
+
+                let profitMessage = '';
+                if (profit > 0) {
+                    profitMessage = `<p class="result-item-sub-line win">✅ หากชนะในงวดนี้ 🥳 คุณจะได้กำไร ${formatNumber(profit)} บาท</p>`;
+                } else {
+                    profitMessage = `<p class="result-item-sub-line lose">✅ หากชนะในงวดนี้ 🥳 คุณจะได้ทุนคืนทั้งหมด และขาดทุนเล็กน้อย ${formatNumber(Math.abs(profit))} บาท</p>`;
+                }
+
+                if (i === 0) {
+                    itemClass += ' initial-bet-highlight';
+                    mainLineClass += ' initial-bet-main-line';
+                    resultHtml += `
+                        <div class="${itemClass}">
+                            <p class="${mainLineClass}">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">${nextBetPerUnit}</span> (รวม ${nextTotalBet} บาท)</p>
+                            ${profitMessage}
+                        </div>
+                    `;
+                } else {
+                    resultHtml += `
+                        <div class="${itemClass}">
+                            <p class="${mainLineClass}">
+                                🎯 งวดที่ ${i}: <span class="result-bet-highlight">แทงตัวละ ${nextBetPerUnit} (รวม ${nextTotalBet} บาท)</span>
+                            </p>
+                            ${profitMessage}
+                        </div>
+                    `;
+                }
+                currentLoss = newTotalLoss;
+            }
+
+            resultsContent.innerHTML = resultHtml;
+
+        } else {
+             resultsContent.innerHTML = `<div class="message-box important-note">⚠️ ทุนที่กรอกมาไม่เพียงพอสำหรับการเดินเงินแบบ 5 งวด</div>`;
+        }
     }
     
     // Event listeners
