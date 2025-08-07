@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมคำนวณการเดินเงิน</title>
+    <title>Kulucky so-on</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -70,16 +70,16 @@
         }
         .input-field-container label {
             white-space: nowrap;
-            font-weight: 700; /* ปรับให้ตัวอักษรหนาขึ้น */
-            font-size: 1.1rem; /* เพิ่มขนาดตัวอักษร */
+            font-weight: 700;
+            font-size: 1.1rem;
         }
         .input-field-container input {
-            width: 150px; /* ปรับความกว้างของช่องกรอก */
-            padding: 10px; /* เพิ่มขนาด padding */
+            width: 150px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
-            font-size: 1.1rem; /* เพิ่มขนาดตัวอักษรในช่องกรอก */
+            font-size: 1.1rem;
         }
         .button-group {
             display: flex;
@@ -94,11 +94,11 @@
             font-size: 1rem;
             transition: all 0.3s ease;
         }
-        #analyzeBtn {
+        #analyzeBtn, #analyzeCapitalBtn {
             background-color: var(--primary-color);
             color: #fff;
         }
-        #analyzeBtn:hover {
+        #analyzeBtn:hover, #analyzeCapitalBtn:hover {
             background-color: #1976D2;
         }
         #clearBtn {
@@ -108,13 +108,19 @@
         #clearBtn:hover {
             background-color: #757575;
         }
-        #continueBtn {
+        #continueBtn, #showLossAnalysisBtn, #showCapitalAnalysisBtn {
             background-color: var(--success-color);
             color: #fff;
-            display: none;
         }
-        #continueBtn:hover {
+        #continueBtn:hover, #showLossAnalysisBtn:hover, #showCapitalAnalysisBtn:hover {
             background-color: #388E3C;
+        }
+        #backFromLossBtn, #backFromCapitalBtn {
+            background-color: #607D8B;
+            color: #fff;
+        }
+        #backFromLossBtn:hover, #backFromCapitalBtn:hover {
+            background-color: #455A64;
         }
         .instruction-box-header {
             font-size: 0.9rem;
@@ -199,6 +205,20 @@
             font-size: 1.5em;
             font-weight: 800;
         }
+        /* New styles for emphasis */
+        .initial-bet-highlight {
+            background-color: #e8f5e9;
+            border: 2px solid var(--success-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .initial-bet-main-line {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success-color);
+        }
         @media (max-width: 600px) {
             .header {
                 flex-direction: column;
@@ -214,7 +234,7 @@
                 font-size: 1.2rem;
             }
             .input-field-container input {
-                width: 100%; /* ปรับความกว้างให้เต็มจอสำหรับมือถือ */
+                width: 100%;
                 padding: 8px;
                 font-size: 1rem;
             }
@@ -235,25 +255,62 @@
 
 <header class="header" id="mainHeader">
     <div class="header-left">
-        <div class="header-title">วิเคราะห์การเดินเงิน</div>
-        <div class="input-group">
-            <div class="input-field-container">
-                <label for="totalLossInput">💰 ทุนที่เสียไปทั้งหมด:</label>
-                <input type="number" id="totalLossInput" placeholder="เช่น 75" value="">
-            </div>
+        <div class="header-title">Kulucky so-on</div>
+        
+        <div id="initialChoice">
+            <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">เลือกประเภทการวิเคราะห์:</p>
             <div class="button-group">
-                <button id="analyzeBtn">📊 คำนวณ</button> <button id="clearBtn">🔄 ล้างตัวเลข</button>
-                <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+                <button id="showLossAnalysisBtn">ทุนที่เสียไปล่าสุด</button>
+                <button id="showCapitalAnalysisBtn">ทุนทั้งหมดที่มี</button>
+            </div>
+        </div>
+
+        <div id="lossAnalysisSection" style="display:none;">
+            <div class="input-group">
+                <div class="input-field-container">
+                    <label for="totalLossInput">💰 ทุนที่เสียไปทั้งหมด:</label>
+                    <input type="number" id="totalLossInput" placeholder="เช่น 75" value="">
+                </div>
+                <div class="button-group">
+                    <button id="analyzeBtn">📊 คำนวณ</button>
+                    <button id="clearBtn">🔄 ล้างตัวเลข</button>
+                    <button id="continueBtn" style="display:none;">💪 สู้ต่อ</button>
+                    <button id="backFromLossBtn">🔙 กลับ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="capitalAnalysisSection" style="display:none;">
+            <div class="input-group">
+                <div class="input-field-container">
+                    <label for="totalCapitalInput">💸 ทุนที่มีทั้งหมด:</label>
+                    <input type="number" id="totalCapitalInput" placeholder="เช่น 500">
+                </div>
+                <div class="button-group">
+                    <button id="analyzeCapitalBtn">📊 วิเคราะห์ทุน</button>
+                    <button id="backFromCapitalBtn">🔙 กลับ</button>
+                </div>
             </div>
         </div>
     </div>
+    
     <div class="header-right">
         <div class="instruction-box-header">
-            <p><strong>คำชี้แจง:</strong></p>
-            <p>* ต้องเลือกแทงเพียง 1 หลัก (เช่น แทงเฉพาะหลักหน่วย)</p>
-            <p>* ต้องแทง 5 ตัวเดิมจนกว่าจะชนะ เช่น แทง "ต่ำ" (0,1,2,3,4) ไปจนกว่าจะได้ทุนคืน</p>
-            <p>* เมื่อชนะ ให้หยุดเดินเงินทันที แล้วกลับไปเล่นตามปกติ</p>
-            <p>* ใช้เดินเงินเพื่อถอนทุนที่เสียไปเท่านั้น</p>
+            <p><strong>คำชี้แจงและคำแนะนำ:</strong></p>
+            <p>โปรแกรมนี้จะช่วยคุณวางแผนการเดินเงินเพื่อ "ถอนทุนคืน" จากการแทงแบบ 1 หลัก 5 ตัว (เช่น ต่ำ/สูง หรือ คู่/คี่)</p>
+            <hr style="border-color:#ddd;">
+            <p><b>[ วิธีการใช้งาน ]</b></p>
+            <ol>
+                <li>**วิเคราะห์ทุนที่เสีย:** หากคุณเพิ่งเสียทุนไป ให้เลือก <b>"ทุนที่เสียไปล่าสุด"</b> เพื่อหาแผนการแทงต่อเนื่อง</li>
+                <li>**วิเคราะห์ทุนทั้งหมด:** หากคุณต้องการวางแผนการแทงตั้งแต่เริ่มต้น ให้เลือก <b>"ทุนทั้งหมดที่มี"</b> เพื่อหาจำนวนเงินที่ควรเริ่มแทงในงวดแรก</li>
+            </ol>
+            <hr style="border-color:#ddd;">
+            <p><b>[ ข้อควรจำ ]</b></p>
+            <ul>
+                <li>*แผนการนี้ใช้เพื่อ <b>"ถอนทุนคืน"</b> เท่านั้น*</li>
+                <li>*ต้องแทง 5 ตัวเดิมจนกว่าจะชนะ*</li>
+                <li>*เมื่อชนะและได้ทุนคืนแล้ว ให้หยุดการเดินเงินตามแผนทันที*</li>
+            </ul>
         </div>
     </div>
 </header>
@@ -266,14 +323,14 @@
         <div class="message-box instruction-box">
             <p>📝 **คำอธิบายการใช้งาน:**</p>
             <ol>
-                <li>กรอกเงินทุนทั้งหมดที่คุณเสียไปแล้วในรอบล่าสุด</li>
-                <li>กดปุ่ม "คำนวณ" เพื่อดูผลลัพธ์ในการแทงงวดต่อไป</li>
+                <li>เลือกประเภทการวิเคราะห์ที่คุณต้องการ</li>
+                <li>ถ้าเลือก "ทุนที่เสียไปล่าสุด" ให้กรอกเงินทุนที่เสียไปทั้งหมดในรอบล่าสุด แล้วกด "คำนวณ"</li>
+                <li>ถ้าเลือก "ทุนทั้งหมดที่มี" ให้กรอกเงินทุนที่มี แล้วกด "วิเคราะห์ทุน" เพื่อหาจุดเริ่มต้นที่เหมาะสม</li>
             </ol>
         </div>
     </div>
     
     <div id="results" style="display:none;">
-        <h3 class="section-title">✨ ผลลัพธ์การวิเคราะห์ ✨</h3>
         <div id="resultsContent"></div>
     </div>
 </div>
@@ -287,6 +344,16 @@
     const initialContent = document.getElementById('initialContent');
     const resultsDiv = document.getElementById('results');
     const resultsContent = document.getElementById('resultsContent');
+
+    const initialChoice = document.getElementById('initialChoice');
+    const showLossAnalysisBtn = document.getElementById('showLossAnalysisBtn');
+    const showCapitalAnalysisBtn = document.getElementById('showCapitalAnalysisBtn');
+    const lossAnalysisSection = document.getElementById('lossAnalysisSection');
+    const capitalAnalysisSection = document.getElementById('capitalAnalysisSection');
+    const backFromLossBtn = document.getElementById('backFromLossBtn');
+    const backFromCapitalBtn = document.getElementById('backFromCapitalBtn');
+    const totalCapitalInput = document.getElementById('totalCapitalInput');
+    const analyzeCapitalBtn = document.getElementById('analyzeCapitalBtn');
     
     let totalLoss = 0;
     let period = 0;
@@ -358,9 +425,139 @@
         generatePeriods(5);
     }
     
+    function analyzeCapital() {
+        const inputCapital = parseFloat(totalCapitalInput.value);
+
+        if (isNaN(inputCapital) || inputCapital <= 0) {
+            alert('กรุณากรอกตัวเลขทุนที่ถูกต้อง');
+            return;
+        }
+
+        initialContent.style.display = 'none';
+        resultsDiv.style.display = 'block';
+        resultsContent.innerHTML = '';
+
+        const periodsToSurvive = 5;
+        let recommendedBetPerUnit = 0;
+        let found = false;
+
+        for (let initialBetPerUnitCandidate = 1; initialBetPerUnitCandidate < inputCapital; initialBetPerUnitCandidate++) {
+            let currentLoss = 0;
+            let totalMoneyNeeded = 0;
+            let canSurvive = true;
+
+            const firstTotalBet = initialBetPerUnitCandidate * betMultiplier;
+            totalMoneyNeeded += firstTotalBet;
+            currentLoss += firstTotalBet;
+
+            if (totalMoneyNeeded > inputCapital) {
+                canSurvive = false;
+            }
+
+            for (let i = 0; i < periodsToSurvive && canSurvive; i++) {
+                const nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                const nextTotalBet = nextBetPerUnit * betMultiplier;
+                
+                totalMoneyNeeded += nextTotalBet;
+                currentLoss += nextTotalBet;
+
+                if (totalMoneyNeeded > inputCapital) {
+                    canSurvive = false;
+                }
+            }
+
+            if (canSurvive) {
+                recommendedBetPerUnit = initialBetPerUnitCandidate;
+                found = true;
+            } else {
+                break;
+            }
+        }
+
+        if (found) {
+            let resultHtml = `
+                <h3 class="section-title">✨ แผนการแทงสำหรับทุน ${formatNumber(inputCapital)} บาท ✨</h3>
+                <div class="message-box instruction-box">
+                    <p>📝 **วิธีแทง:**</p>
+                    <p>เลือกแทง 1 หลัก (หลักหน่วยหรือหลักสิบ) 5 ตัว เช่น "ต่ำ" (0,1,2,3,4) หรือ "สูง" (5,6,7,8,9)</p>
+                    <img src="URL_ของรูปภาพที่คุณอัปโหลด.png" alt="ตัวอย่างการแทง" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px;">
+                </div>
+                <p style="margin-top: 20px;"><b>เมื่อแทงเสีย ให้เดินเกมตามแผนต่อไปนี้:</b></p>
+            `;
+            
+            let currentLoss = 0;
+            for (let i = 0; i <= periodsToSurvive; i++) {
+                let nextBetPerUnit;
+                if (i === 0) {
+                    nextBetPerUnit = recommendedBetPerUnit;
+                } else {
+                    nextBetPerUnit = Math.ceil(currentLoss / ratio);
+                }
+
+                const nextTotalBet = nextBetPerUnit * betMultiplier;
+                const newTotalLoss = currentLoss + nextTotalBet;
+
+                let itemClass = 'result-item';
+                let mainLineClass = 'result-item-main-line';
+
+                if (i === 0) {
+                    itemClass += ' initial-bet-highlight';
+                    mainLineClass += ' initial-bet-main-line';
+                    resultHtml += `<div class="${itemClass}"><p class="${mainLineClass}">🎯 ควรเริ่มแทงตัวละ <span class="result-bet-highlight">${nextBetPerUnit}</span> (รวม ${nextTotalBet} บาท)</p></div>`;
+                } else {
+                    resultHtml += `
+                        <div class="${itemClass}">
+                            <p class="${mainLineClass}">
+                                🎯 งวดที่ ${i}: <span class="result-bet-highlight">แทงตัวละ ${nextBetPerUnit} (รวม ${nextTotalBet} บาท)</span>
+                            </p>
+                        </div>
+                    `;
+                }
+                currentLoss = newTotalLoss;
+            }
+
+            resultsContent.innerHTML = resultHtml;
+
+        } else {
+             resultsContent.innerHTML = `<div class="message-box important-note">⚠️ ทุนที่กรอกมาไม่เพียงพอสำหรับการเดินเงินแบบ 5 งวด</div>`;
+        }
+    }
+    
+    // Original event listeners
     analyzeBtn.addEventListener('click', analyze);
     clearBtn.addEventListener('click', clear);
     continueBtn.addEventListener('click', continueAnalysis);
+    
+    // Event listeners for new buttons
+    showLossAnalysisBtn.addEventListener('click', () => {
+        initialChoice.style.display = 'none';
+        lossAnalysisSection.style.display = 'block';
+        initialContent.style.display = 'block';
+        resultsDiv.style.display = 'none';
+    });
+
+    showCapitalAnalysisBtn.addEventListener('click', () => {
+        initialChoice.style.display = 'none';
+        capitalAnalysisSection.style.display = 'block';
+        initialContent.style.display = 'block';
+        resultsDiv.style.display = 'none';
+    });
+
+    backFromLossBtn.addEventListener('click', () => {
+        initialChoice.style.display = 'block';
+        lossAnalysisSection.style.display = 'none';
+        clear();
+    });
+
+    backFromCapitalBtn.addEventListener('click', () => {
+        initialChoice.style.display = 'block';
+        capitalAnalysisSection.style.display = 'none';
+        totalCapitalInput.value = '';
+        resultsContent.innerHTML = '';
+        clear();
+    });
+    
+    analyzeCapitalBtn.addEventListener('click', analyzeCapital);
 </script>
 
 </body>
